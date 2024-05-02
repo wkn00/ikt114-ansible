@@ -1,0 +1,27 @@
+# This task installs Python3 using the apt package manager. It ensures Python3 is present on the system.
+- name: Install Python3
+  become: true
+  ansible.builtin.apt:
+    name: python3
+    state: present
+
+# This task installs pip, a package manager for Python, specifically for Python3.
+- name: Install pip for Python3
+  become: true
+  ansible.builtin.apt:
+    name: python3-pip
+    state: present
+
+# Once pip is installed, this task ensures that pip itself is upgraded to its latest version.
+- name: Upgrade pip to the latest version
+  become: true
+  ansible.builtin.pip:
+    name: pip
+    state: latest
+
+# This task installs setuptools_rust, a library that is often required for building and installing Rust extensions for Python packages.
+- name: Install setuptools_rust
+  become: true
+  ansible.builtin.pip:
+    name: setuptools_rust
+    state: present

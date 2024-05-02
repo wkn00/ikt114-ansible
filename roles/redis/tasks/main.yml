@@ -1,0 +1,20 @@
+# Task to pull the latest Redis Docker image
+- name: Pull Redis Docker image
+  become: true  # Use superuser privileges
+  community.docker.docker_image:  # Use the docker_image module from the community.docker collection
+    name: redis:4  # Specify the image and tag to pull
+    source: pull  # Ensure the image is pulled from a registry
+
+# Task to run a Redis container using the pulled image
+- name: Run Redis container
+  become: true  # Use superuser privileges
+  community.docker.docker_container:  # Use the docker_container module from the community.docker collection
+    name: redis  # Define the name of the container
+    image: redis:4  # Specify the image and tag to use for the container
+    state: started  # Ensure the container is started
+    restart_policy: always  # Define the restart policy for the container
+    ports:  # Map ports from the container to the host
+      - "6379:6379"
+    volumes:  # Define volumes for persistent data storage
+      - redis_data:/data  # Map the 'redis_data' volume to '/data' in the container
+    recreate: true  # Recreate the container if necessary

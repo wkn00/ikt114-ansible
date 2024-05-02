@@ -1,0 +1,47 @@
+# Pulls the NGINX Docker image from the Docker repository
+- name: Pull NGINX Docker image
+  become: true  # Gain superuser privileges
+  community.docker.docker_image:
+    name: nginx  # Name of the Docker image to pull
+    source: pull  # Pulls the image
+
+# Ensures the NGINX configuration directory exists
+- name: Ensure NGINX conf.d directory exists
+  become: true  # Gain superuser privileges
+  ansible.builtin.file:
+    path: /etc/nginx/conf.d  # Path to the NGINX configuration directory
+    state: directory  # Ensures the path is a directory
+    mode: '0755'  # Sets the directory permissions
+
+# Copies the NGINX configuration for CTFd to the host
+- name: Copy NGINX configuration for CTFd to host
+  become: true  # Gain superuser privileges
+  ansible.builtin.template:
+    src: ctfd.conf.j2  # Source template file
+    dest: /etc/nginx/conf.d/ctfd.conf  # Destination path on the host
+    owner: root  # Sets file owner
+    group: root  # Sets file group
+    mode: '0644'  # Sets file permissions
+  notify: restart nginx  # Triggers the nginx restart handler upon change
+
+# Runs the NGINX container with the custom configuration
+- name: Run NGINX container with custom configuration
+  become: true  # Gain superuser privileges
+  community.docker.docker_container:
+    name: nginx_ctfd  # Container name
+    image: nginx  # Image to use for the container
+    state: started  # Ensures the container is started
+    restart_policy: always  # Container restart policy
+    ports:
+      - "80:80"  # Port mapping
+    volumes:
+      - "/etc/nginx/conf.d/ctfd.conf:/etc/nginx/conf.d/ctfd.conf:ro"  # Mounts the config file
+    command: "/bin/sh -c 'nginx -g \"daemon off;\"'"  # Custom command to run in the container
+    recreate: yes  # Recreate the container if it already exists
+
+# Ensures the NGINX container is running
+- name: Ensure NGINX container is running
+  become: true  # Gain superuser privileges
+  community.docker.docker_container:
+    name: nginx_ctfd  # Container name
+    state: started  # Ensures the container is started

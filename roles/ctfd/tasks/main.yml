@@ -1,0 +1,27 @@
+# Pulls the CTFd Docker image from the Docker registry.
+- name: Pull the CTFd Docker image
+  become: true  # Elevated privileges are required to interact with Docker.
+  community.docker.docker_image:
+    name: ctfd/ctfd  # The name of the Docker image to be pulled.
+    source: pull  # Instructs Ansible to pull the image.
+
+# Creates and starts the CTFd container using the pulled image.
+- name: Run the CTFd container
+  become: true  # Elevated privileges are necessary for container management.
+  community.docker.docker_container:
+    name: ctfd  # Name assigned to the Docker container.
+    image: ctfd/ctfd  # Specifies the image to use for the container.
+    state: started  # Ensures the container is in the running state.
+    #user: root  # Specifies the user to run the container as.
+    restart_policy: always  # Container will always restart unless stopped intentionally.
+    env:  # Environment variables for the CTFd container.
+      DATABASE_URL: "mysql+pymysql://ikt114:ikt114@192.168.56.20/mysql_database"  # MySQL connection string.
+      REDIS_URL: "redis://192.168.56.10:6379"  # Redis connection string.
+      REVERSE_PROXY: "true"  # Enables reverse proxy support.
+      WORKERS: "1"  # Number of worker processes.
+      LOG_folder: "/var/log/ctfd"  # Log folder path.
+      Access_log: "/var/log/ctfd/access.log"  # Access log file path.
+      ERROR_log: "/var/log/ctfd/error.log"  # Error log file path.
+    ports:
+      - "8000:8000"  # Maps port 8000 inside the container to port 8000 on the host.
+    recreate: true  # Recreates the container if necessary.

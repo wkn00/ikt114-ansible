@@ -1,0 +1,7 @@
+# This task restarts the nginx_ctfd Docker container
+- name: restart nginx
+  become: true  # Gain superuser privileges
+  community.docker.docker_container:
+    name: nginx_ctfd  # Specifies the name of the container to target
+    state: started  # Ensures the container is in a started state
+    restart: yes  # Forces a restart of the container

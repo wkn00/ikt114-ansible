@@ -1,0 +1,24 @@
+# Task to pull the latest MySQL Docker image
+- name: Pull MySQL Docker image
+  become: true
+  community.docker.docker_image:
+    name: mysql:latest  # Specifies the Docker image to pull
+    source: pull  # Specifies the source to pull the image from
+
+# Task to run a MySQL container from the pulled image
+- name: Run MySQL container
+  become: true
+  community.docker.docker_container:
+    name: mysql  # Sets the name of the container
+    image: mysql:latest  # Specifies the Docker image to use
+    state: started  # Ensures the container is running
+    restart_policy: always  # Container will always restart
+    env:  # Environment variables for MySQL configuration
+      MYSQL_ROOT_PASSWORD: "ikt114"  # Sets the root password for MySQL
+      MYSQL_DATABASE: "mysql_database"  # Creates a database named 'mysql_database'
+      MYSQL_USER: "ikt114"  # Creates a user named 'ikt114'
+      MYSQL_PASSWORD: "ikt114"  # Sets the password for the 'ikt114' user
+    ports:
+      - "3306:3306"  # Maps port 3306 inside the container to port 3306 on the host
+    volumes:
+      - mysql_data:/var/lib/mysql  # Maps 'mysql_data' volume to '/var/lib/mysql' in the container

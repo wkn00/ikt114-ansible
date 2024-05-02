@@ -1,0 +1,19 @@
+# Update apt cache
+- name: Update apt cache
+  become: true
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600  # Updates the cache if it's older than an hour
+
+# Install required system packages
+- name: Install required system packages
+  become: true
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https  # Package for secure communication with APT repositories over HTTPS
+      - ca-certificates  # Package for managing SSL certificates
+      - curl  # Package for transferring data using various network protocols
+      - software-properties-common  # Package for managing software repositories
+      - gnupg-agent  # Package for managing GnuPG keys
+      - neofetch
+    state: present

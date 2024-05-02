@@ -1,0 +1,7 @@
+# This handler is responsible for restarting the Docker service
+- name: restart docker
+  become: true  # Gain superuser privileges
+  ansible.builtin.service:
+    name: docker  # Specifies the Docker service to target
+    state: restarted  # Ensures the Docker service is restarted
+    enabled: yes  # Ensures the Docker service is enabled to start on boot

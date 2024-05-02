@@ -1,0 +1,38 @@
+# site.yml: Main playbook that orchestrates the entire deployment across different servers
+
+# Apply common configuration, Python, and Docker installation to all servers
+- name: Apply common configuration to all servers
+  hosts: all
+  become: yes
+  roles:
+    - common  # Apply common configurations across all servers
+    - python  # Ensure Python is installed
+    - docker  # Install Docker and Docker Compose
+
+# Configure the Redis server
+- name: Set up Redis server
+  become: yes
+  hosts: redis-server
+  roles:
+    - redis  # Deploy and configure the Redis server
+
+# Configure the database server
+- name: Set up database server
+  become: yes
+  hosts: db-server
+  roles:
+    - db  # Deploy and configure the database server
+
+# Configure the CTFd server
+- name: Set up ctfd server
+  become: yes
+  hosts: ctfd-server
+  roles:
+    - ctfd  # Deploy and configure the CTFd application
+
+# Configure the NGINX server
+- name: Set up nginx server
+  become: yes
+  hosts: nginx-server
+  roles:
+    - nginx  # Deploy and configure the NGINX server as a reverse proxy
